@@ -1,20 +1,20 @@
-<button id="theme-toggle" aria-label="Toggle color theme">[ ]</button>
+<button id="theme-toggle" aria-label="Toggle dark mode">🌙</button>
 
 <script>
   const btn = document.getElementById('theme-toggle');
 
-  function label(theme: string | undefined) {
-    return theme === 'dark' ? '[light]' : '[dark]';
+  function icon(theme: string | undefined) {
+    return theme === 'dark' ? '☀️' : '🌙';
   }
 
   if (btn) {
-    btn.textContent = label(document.documentElement.dataset.theme);
+    btn.textContent = icon(document.documentElement.dataset.theme);
   }
 
   btn?.addEventListener('click', () => {
     const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
     document.documentElement.dataset.theme = next;
     localStorage.setItem('theme', next);
-    btn.textContent = label(next);
+    btn.textContent = icon(next);
   });
 </script>

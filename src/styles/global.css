@@ -215,7 +215,7 @@ h1::before {
   padding: 0;
 }
 
-/* Tag pills, bracket style */
+/* Tag pills */
 .tag-list {
   display: flex;
   flex-wrap: wrap;
@@ -226,16 +226,16 @@ h1::before {
 }
 
 .tag-pill {
+  display: inline-block;
   font-size: 0.8125rem;
-  color: var(--color-prompt);
-  text-transform: lowercase;
+  color: var(--color-accent);
+  background: var(--color-accent-soft);
+  border-radius: 999px;
+  padding: 0.2em 0.75em;
 }
 
-.tag-pill::before { content: '['; }
-.tag-pill::after { content: ']'; }
-
 .tag-pill:hover {
-  color: var(--color-accent);
+  filter: brightness(1.05);
   text-decoration: none;
 }
 
@@ -261,19 +261,10 @@ h1::before {
   font-weight: 600;
 }
 
-.post-card h2 a::before {
-  content: '> ';
-  color: var(--color-prompt);
-}
-
 .post-card .post-meta {
   color: var(--color-text-muted);
   font-size: 0.8125rem;
   margin-bottom: 0.5rem;
-}
-
-.post-card .post-meta::before {
-  content: '// ';
 }
 
 .post-card p.description {
@@ -289,33 +280,25 @@ h1::before {
   gap: 1rem;
   flex-wrap: wrap;
   padding-bottom: 1.25rem;
-  border-bottom: 1px dashed var(--color-border);
+  border-bottom: 1px solid var(--color-border);
   margin-bottom: 2rem;
-  font-size: 0.9rem;
 }
 
-.prompt-line {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 0.6rem;
+.site-title {
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--color-text);
 }
 
-.prompt-id {
-  color: var(--color-prompt);
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-.prompt-sep {
-  color: var(--color-text-muted);
-  margin-right: -0.1rem;
+.site-title:hover {
+  text-decoration: none;
 }
 
 .site-nav {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 1.25rem;
+  font-size: 0.9375rem;
 }
 
 .site-nav a {
@@ -329,6 +312,7 @@ h1::before {
 .cursor {
   color: var(--color-prompt);
   animation: blink 1s steps(1) infinite;
+  margin-left: 0.1rem;
 }
 
 @keyframes blink {
@@ -336,29 +320,25 @@ h1::before {
 }
 
 .site-footer {
-  border-top: 1px dashed var(--color-border);
+  border-top: 1px solid var(--color-border);
   margin-top: 3rem;
   padding-top: 1.25rem;
   color: var(--color-text-muted);
   font-size: 0.8125rem;
 }
 
-.site-footer .prompt-id {
-  font-size: 0.8125rem;
-}
-
 #theme-toggle {
   background: none;
-  border: none;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
   cursor: pointer;
-  font-family: var(--font-mono);
-  font-size: 0.8125rem;
-  color: var(--color-text-muted);
-  padding: 0;
+  font-size: 1rem;
+  line-height: 1;
+  padding: 0.3rem 0.5rem;
 }
 
 #theme-toggle:hover {
-  color: var(--color-accent);
+  border-color: var(--color-accent);
 }
 
 time {
