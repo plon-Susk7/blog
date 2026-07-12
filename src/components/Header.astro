@@ -1,14 +1,17 @@
 ---
 import ThemeToggle from './ThemeToggle.astro';
-import { SITE_TITLE, NAV_LINKS, withBase } from '../consts';
+import { NAV_LINKS, withBase } from '../consts';
 ---
 
 <header class="site-header">
-  <a href={withBase('/')} class="site-title">{SITE_TITLE}</a>
-  <nav class="site-nav">
-    {NAV_LINKS.map((link) => (
-      <a href={withBase(link.href)}>{link.label}</a>
-    ))}
-    <ThemeToggle />
-  </nav>
+  <div class="prompt-line">
+    <span class="prompt-id">visitor@blog</span><span class="prompt-sep">:~$</span>
+    <nav class="site-nav">
+      {NAV_LINKS.map((link) => (
+        <a href={withBase(link.href)}>{link.label.toLowerCase()}</a>
+      ))}
+    </nav>
+    <span class="cursor">▋</span>
+  </div>
+  <ThemeToggle />
 </header>

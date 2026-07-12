@@ -16,7 +16,7 @@ const { title, description, date, updated, tags } = Astro.props;
 
 <BaseLayout title={title} description={description}>
   <article>
-    <header>
+    <header class="post-header">
       <h1>{title}</h1>
       <p class="post-meta">
         <FormattedDate date={date} />

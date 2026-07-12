@@ -16,7 +16,7 @@ const counts = ALL_TAGS.map((tag) => ({
   <ul class="tag-list">
     {counts.map(({ tag, count }) => (
       <li>
-        <a class="tag-pill" href={withBase(`tags/${tag.toLowerCase()}/`)}>{tag} ({count})</a>
+        <a class="tag-pill" href={withBase(`tags/${tag.toLowerCase()}/`)}>{tag}</a> <span class="post-meta">{count} post{count === 1 ? '' : 's'}</span>
       </li>
     ))}
   </ul>
