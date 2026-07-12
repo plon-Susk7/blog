@@ -1,0 +1,22 @@
+---
+import FormattedDate from './FormattedDate.astro';
+import TagList from './TagList.astro';
+import { withBase } from '../consts';
+
+interface Props {
+  slug: string;
+  title: string;
+  description: string;
+  date: Date;
+  tags: string[];
+}
+
+const { slug, title, description, date, tags } = Astro.props;
+---
+
+<li class="post-card">
+  <h2><a href={withBase(`posts/${slug}/`)}>{title}</a></h2>
+  <p class="post-meta"><FormattedDate date={date} /></p>
+  <p class="description">{description}</p>
+  <TagList tags={tags} />
+</li>

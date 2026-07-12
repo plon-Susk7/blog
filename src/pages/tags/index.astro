@@ -1,0 +1,23 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { ALL_TAGS, withBase } from '../../consts';
+
+const posts = await getCollection('blog', ({ data }) => import.meta.env.DEV || !data.draft);
+
+const counts = ALL_TAGS.map((tag) => ({
+  tag,
+  count: posts.filter((post) => post.data.tags.includes(tag)).length,
+}));
+---
+
+<BaseLayout title="Tags">
+  <h1>Tags</h1>
+  <ul class="tag-list">
+    {counts.map(({ tag, count }) => (
+      <li>
+        <a class="tag-pill" href={withBase(`tags/${tag.toLowerCase()}/`)}>{tag} ({count})</a>
+      </li>
+    ))}
+  </ul>
+</BaseLayout>

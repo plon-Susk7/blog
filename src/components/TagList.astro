@@ -1,0 +1,17 @@
+---
+import { withBase } from '../consts';
+
+interface Props {
+  tags: string[];
+}
+
+const { tags } = Astro.props;
+---
+
+<ul class="tag-list">
+  {tags.map((tag) => (
+    <li>
+      <a class="tag-pill" href={withBase(`tags/${tag.toLowerCase()}/`)}>{tag}</a>
+    </li>
+  ))}
+</ul>

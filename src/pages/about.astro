@@ -1,0 +1,24 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { withBase } from '../consts';
+---
+
+<BaseLayout title="About">
+  <div class="prose">
+    <h1>About</h1>
+    <p>
+      I'm Priyash Shah, an AI developer at FNZ working on applied AI in the finance/advisory
+      tech space. I hold a bachelor's degree in computer science and spend a lot of my free
+      time experimenting with AI — fine-tuning models, building side projects, and reading
+      through papers.
+    </p>
+    <p>
+      This site is where I write up what comes out of that experimentation: research notes,
+      project logs, and general learnings. Posts are tagged so you can filter to what you
+      care about from the <a href={withBase('tags/')}>tags page</a>.
+    </p>
+    <p>
+      There's an <a href={withBase('rss.xml')}>RSS feed</a> if you'd rather subscribe than check back.
+    </p>
+  </div>
+</BaseLayout>
