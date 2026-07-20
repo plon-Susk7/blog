@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Artificial Hivemind — Interactive Paper Guide</title>
+<style is:global>
+  :root {
+    --ink: #101319;
+    --ink-soft: #1b202b;
+    --bone: #f5efe4;
+    --bone-dim: #e7dfd0;
+    --honey: #e8a13d;
+    --honey-deep: #c07e1d;
+    --cluster-blue: #5b7fd4;
+    --alert: #c4554d;
+    --mut: #8a8375;
+    --card: #171c26;
+    --line: #2a3140;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--ink);
+    color: var(--bone);
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 17px;
+    line-height: 1.65;
+  }
+  .mono { font-family: 'Courier New', monospace; }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 0 22px; }
+
+  /* ---------- progress bar ---------- */
+  #progress { position: fixed; top:0; left:0; height:3px; background: var(--honey); width:0%; z-index:99; transition: width .1s linear; }
+
+  /* ---------- nav ---------- */
+  nav {
+    position: sticky; top:0; z-index: 90;
+    background: rgba(16,19,25,.94); backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--line);
+  }
+  nav .wrap { display:flex; gap: 4px; overflow-x:auto; padding: 10px 22px; }
+  nav a {
+    color: var(--mut); text-decoration:none; font-size: 12.5px; letter-spacing:.6px;
+    text-transform: uppercase; font-family: 'Courier New', monospace;
+    padding: 5px 10px; border-radius: 3px; white-space: nowrap;
+  }
+  nav a:hover, nav a:focus { color: var(--honey); outline: none; }
+
+  /* ---------- hero ---------- */
+  header { padding: 64px 0 34px; }
+  .eyebrow { font-family:'Courier New', monospace; font-size: 12.5px; letter-spacing: 2px; text-transform: uppercase; color: var(--honey); margin-bottom: 16px; }
+  h1 { font-size: clamp(34px, 5.5vw, 56px); line-height: 1.08; font-weight: 700; letter-spacing: -0.5px; }
+  h1 em { color: var(--honey); font-style: italic; }
+  .authors { margin-top: 18px; color: var(--mut); font-size: 14.5px; }
+  .authors strong { color: var(--bone-dim); font-weight: normal; }
+  .thesis {
+    margin-top: 26px; font-size: 20px; line-height: 1.55; color: var(--bone-dim);
+    border-left: 3px solid var(--honey); padding-left: 18px;
+  }
+
+  /* ---------- convergence demo ---------- */
+  .demo { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 22px; margin: 34px 0 10px; }
+  .demo h3 { font-size: 15px; font-family:'Courier New',monospace; letter-spacing:1.5px; text-transform:uppercase; color: var(--honey); margin-bottom: 6px; }
+  .demo p { font-size: 15px; color: var(--mut); margin-bottom: 14px; }
+  #plot { width: 100%; height: 340px; background: var(--ink); border-radius: 6px; border: 1px solid var(--line); display:block; }
+  .demo-controls { display:flex; gap:10px; margin-top: 14px; flex-wrap: wrap; align-items:center; }
+  button.btn {
+    background: var(--honey); color: var(--ink); border: none; font-family: 'Courier New', monospace;
+    font-size: 14px; font-weight: bold; letter-spacing:.5px; padding: 10px 18px; border-radius: 5px; cursor: pointer;
+  }
+  button.btn:hover { background: var(--honey-deep); }
+  button.btn:focus-visible { outline: 2px solid var(--bone); outline-offset: 2px; }
+  button.ghost { background: transparent; color: var(--mut); border: 1px solid var(--line); }
+  button.ghost:hover { color: var(--bone); border-color: var(--mut); }
+  .legend { display:flex; gap:16px; font-size: 13px; color: var(--mut); font-family:'Courier New',monospace; }
+  .dot { display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:5px; }
+  .demo-caption { font-size: 13.5px; color: var(--mut); margin-top: 10px; line-height: 1.5; }
+
+  /* ---------- sections ---------- */
+  section { padding: 46px 0 8px; border-top: 1px solid var(--line); margin-top: 40px; }
+  .sec-label { font-family:'Courier New',monospace; font-size: 12.5px; letter-spacing:2px; text-transform: uppercase; color: var(--honey); margin-bottom: 10px; }
+  h2 { font-size: clamp(24px, 3.4vw, 34px); line-height: 1.2; margin-bottom: 18px; }
+  p.body { margin-bottom: 16px; color: var(--bone-dim); }
+  p.body strong { color: var(--bone); }
+  .callout { background: var(--card); border:1px solid var(--line); border-left: 3px solid var(--honey); border-radius: 6px; padding: 16px 18px; margin: 20px 0; font-size: 15.5px; color: var(--bone-dim); }
+  .callout.red { border-left-color: var(--alert); }
+
+  /* ---------- stat strip ---------- */
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); gap: 12px; margin: 26px 0; }
+  .stat { background: var(--card); border:1px solid var(--line); border-radius: 8px; padding: 16px 14px; }
+  .stat .n { font-size: 27px; color: var(--honey); font-weight: bold; line-height: 1.1; }
+  .stat .l { font-size: 12.5px; color: var(--mut); font-family:'Courier New',monospace; letter-spacing:.5px; margin-top: 6px; line-height: 1.4; }
+
+  /* ---------- taxonomy cards ---------- */
+  .tax { display:grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap: 12px; margin: 22px 0; }
+  .tax-card { background: var(--card); border:1px solid var(--line); border-radius: 8px; padding: 16px; cursor: pointer; transition: border-color .15s; }
+  .tax-card:hover { border-color: var(--honey); }
+  .tax-card h4 { font-size: 16px; color: var(--bone); display:flex; justify-content: space-between; align-items: baseline; }
+  .tax-card h4 .pct { color: var(--honey); font-family:'Courier New',monospace; font-size: 14px; }
+  .tax-card .detail { display: none; margin-top: 10px; font-size: 14px; color: var(--mut); line-height: 1.55; }
+  .tax-card.open .detail { display: block; }
+  .tax-card .hint { font-size: 11.5px; color: var(--mut); font-family:'Courier New',monospace; margin-top: 8px; letter-spacing: .5px; }
+
+  /* ---------- similarity bars ---------- */
+  .simbar-block { margin: 22px 0; }
+  .simbar { margin-bottom: 12px; }
+  .simbar .lab { display:flex; justify-content:space-between; font-size: 13.5px; font-family:'Courier New',monospace; color: var(--mut); margin-bottom: 5px; }
+  .simbar .track { height: 16px; background: var(--ink-soft); border-radius: 4px; overflow: hidden; border: 1px solid var(--line); }
+  .simbar .fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--cluster-blue), var(--honey)); border-radius: 3px; transition: width 1.1s cubic-bezier(.2,.7,.3,1); }
+  .simbar.alert .fill { background: linear-gradient(90deg, var(--honey), var(--alert)); }
+
+  /* ---------- overlap examples ---------- */
+  .overlap { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 18px; margin: 18px 0; font-size: 15px; }
+  .overlap .q { font-family:'Courier New',monospace; font-size: 13.5px; color: var(--honey); margin-bottom: 10px; letter-spacing: .3px; }
+  .overlap .resp { margin: 8px 0; color: var(--bone-dim); line-height: 1.6; }
+  .overlap .model { font-family:'Courier New',monospace; font-size: 12.5px; color: var(--cluster-blue); }
+  .hl { background: rgba(232,161,61,.22); border-bottom: 1px solid var(--honey); border-radius: 2px; padding: 0 2px; }
+  .sim-badge { display:inline-block; font-family:'Courier New',monospace; font-size: 12px; color: var(--alert); border: 1px solid var(--alert); border-radius: 4px; padding: 1px 8px; margin-left: 8px; }
+
+  /* ---------- entropy slider ---------- */
+  .entropy-box { background: var(--card); border:1px solid var(--line); border-radius: 8px; padding: 20px; margin: 22px 0; }
+  .entropy-box input[type=range] { width: 100%; accent-color: var(--honey); margin: 14px 0 6px; }
+  .entropy-readout { font-family:'Courier New',monospace; font-size: 14px; color: var(--honey); }
+  .entropy-desc { font-size: 14.5px; color: var(--mut); margin-top: 8px; min-height: 66px; line-height: 1.55; }
+  .vote-row { display:flex; gap: 6px; margin-top: 12px; align-items: flex-end; height: 70px; }
+  .vote { flex:1; background: var(--cluster-blue); border-radius: 3px 3px 0 0; transition: height .3s; min-height: 3px; }
+  .vote:nth-child(2) { background: var(--honey); }
+  .vote:nth-child(3) { background: var(--mut); }
+  .vote-labels { display:flex; gap:6px; font-size: 11px; font-family:'Courier New',monospace; color: var(--mut); }
+  .vote-labels span { flex:1; text-align:center; }
+
+  /* ---------- quiz ---------- */
+  .quiz { background: var(--ink-soft); border: 1px solid var(--line); border-radius: 8px; padding: 20px; margin: 26px 0; }
+  .quiz h4 { font-family:'Courier New',monospace; font-size: 13px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--honey); margin-bottom: 10px; }
+  .quiz .qq { font-size: 16px; margin-bottom: 12px; color: var(--bone); }
+  .quiz .opt { display:block; width: 100%; text-align:left; background: var(--card); color: var(--bone-dim); border: 1px solid var(--line); border-radius: 6px; padding: 10px 14px; margin-bottom: 8px; cursor:pointer; font-family: Georgia, serif; font-size: 15px; }
+  .quiz .opt:hover { border-color: var(--honey); }
+  .quiz .opt.correct { border-color: #6fae6f; color: #b9e0b9; }
+  .quiz .opt.wrong { border-color: var(--alert); color: #e0a49f; }
+  .quiz .expl { display:none; font-size: 14.5px; color: var(--mut); margin-top: 10px; line-height: 1.55; border-top: 1px dashed var(--line); padding-top: 10px; }
+  .quiz.answered .expl { display:block; }
+
+  /* ---------- glossary ---------- */
+  .gl { border-bottom: 1px dotted var(--honey); cursor: help; position: relative; }
+  .gl .tip {
+    display:none; position:absolute; bottom: 130%; left: 0; z-index: 50;
+    background: var(--bone); color: var(--ink); font-size: 13.5px; line-height: 1.5;
+    width: 290px; padding: 10px 12px; border-radius: 6px; font-family: Georgia, serif;
+    box-shadow: 0 6px 24px rgba(0,0,0,.5);
+  }
+  .gl:hover .tip, .gl:focus .tip { display:block; }
+
+  details.deeper { background: var(--card); border:1px solid var(--line); border-radius: 8px; margin: 18px 0; }
+  details.deeper summary { cursor:pointer; padding: 14px 18px; font-family:'Courier New',monospace; font-size: 13.5px; letter-spacing: 1px; color: var(--honey); text-transform: uppercase; }
+  details.deeper .inner { padding: 0 18px 16px; font-size: 15px; color: var(--bone-dim); line-height: 1.6; }
+
+  footer { border-top: 1px solid var(--line); margin-top: 60px; padding: 30px 0 50px; color: var(--mut); font-size: 14px; }
+  footer a { color: var(--honey); }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .simbar .fill, .vote { transition: none; }
+  }
+  @media (max-width: 620px) {
+    body { font-size: 16px; }
+    .gl .tip { width: 220px; }
+  }
+</style>
+</head>
+<body>
+<div id="progress"></div>
+
+<nav aria-label="Sections">
+  <div class="wrap">
+    <a href="#hero">Top</a>
+    <a href="#why">Why it matters</a>
+    <a href="#dataset">The dataset</a>
+    <a href="#intra">Finding 1</a>
+    <a href="#inter">Finding 2</a>
+    <a href="#humans">Human study</a>
+    <a href="#calibration">Finding 3</a>
+    <a href="#takeaways">Takeaways</a>
+    <a href="#glossary">Glossary</a>
+  </div>
+</nav>
+
+<header id="hero" class="wrap">
+  <div class="eyebrow">NeurIPS 2025 · Interactive paper guide</div>
+  <h1>Artificial <em>Hivemind</em>: the open-ended homogeneity of language models</h1>
+  <div class="authors">Jiang, Chai, Li, Liu, Fok, Dziri, Tsvetkov, Sap, Choi — <strong>UW · CMU · AI2 · Lila Sciences · Stanford</strong></div>
+  <p class="thesis">Ask 25 different language models an open-ended question — "write a metaphor about time" — and instead of 25 voices, you get roughly <strong>two ideas</strong>, repeated with minor rephrasing. This paper names that effect, measures it at scale, and shows our evaluation tools are blind exactly where human tastes diverge.</p>
+
+  <div class="demo">
+    <h3>The headline finding, made touchable</h3>
+    <p>A recreation of the paper's Figure 1. Each dot is one model response to <span class="mono">"Write a metaphor about time"</span> (25 models × 50 samples, plotted after dimensionality reduction). Press sample and watch supposedly independent models collapse into two clusters.</p>
+    <canvas id="plot" width="820" height="340" aria-label="Animated scatter plot showing model responses collapsing into two clusters"></canvas>
+    <div class="demo-controls">
+      <button class="btn" id="sampleBtn">Sample 25 models</button>
+      <button class="btn ghost" id="idealBtn">Show what diversity would look like</button>
+      <div class="legend">
+        <span><span class="dot" style="background:var(--honey)"></span>"time is a river"</span>
+        <span><span class="dot" style="background:var(--cluster-blue)"></span>"time is a weaver"</span>
+        <span><span class="dot" style="background:#7d8697"></span>everything else</span>
+      </div>
+    </div>
+    <p class="demo-caption">In the real experiment, the "river" cluster dominates and a smaller "weaver" cluster forms beside it — with only scattered strays. This is an illustrative simulation of that result, not the paper's actual embedding data.</p>
+  </div>
+</header>
+
+<main class="wrap">
+
+<!-- WHY -->
+<section id="why">
+  <div class="sec-label">01 · Why this matters</div>
+  <h2>The worry: a feedback loop that homogenizes human thought</h2>
+  <p class="body">Hundreds of millions of people now ask language models for ideas: brainstorming, naming, writing, life advice. If all models funnel users toward the same few outputs, the concern isn't just boring text — it's that <strong>repeated exposure to similar AI outputs could gradually narrow human thinking itself</strong>. The authors frame this as a long-term AI safety risk, not merely a quality issue.</p>
+  <p class="body">Before this paper, diversity was mostly measured on narrow, synthetic tasks — random number generation, persona generation, poetry tests — and usually by sampling one model repeatedly. Two gaps: nobody had measured diversity on <strong>real user queries</strong>, and nobody had systematically compared <strong>across many models</strong> at scale.</p>
+  <div class="callout">The paper's two-word contribution: <strong>Artificial Hivemind</strong> — the combination of (1) <em>intra-model repetition</em> (one model repeating itself) and (2) <em>inter-model homogeneity</em> (different models converging on the same ideas). The second is the scarier one: it means ensembling several models won't buy you diversity.</div>
+
+  <div class="quiz" data-answer="1">
+    <h4>Check yourself</h4>
+    <div class="qq">Why is <em>inter</em>-model homogeneity considered more critical than intra-model repetition?</div>
+    <button class="opt">Because it makes individual models slower at inference time</button>
+    <button class="opt">Because it means even combining different models won't produce real diversity — they share the same blind spots</button>
+    <button class="opt">Because it only affects open-source models</button>
+    <div class="expl">If different model families independently converge on the same ideas, the standard fix — "just query several models" — fails. The paper suggests shared training data pipelines and synthetic-data contamination as possible causes, flagged for future investigation.</div>
+  </div>
+</section>
+
+<!-- DATASET -->
+<section id="dataset">
+  <div class="sec-label">02 · The resource</div>
+  <h2>Infinity-Chat: 26K real open-ended queries, plus a taxonomy</h2>
+  <p class="body">The authors mined <strong>WildChat</strong> (a corpus of real user–chatbot conversations) for single-turn, English, non-toxic queries, then used GPT-4o to filter for questions that <strong>admit many valid answers with no single ground truth</strong>. Ambiguous ones were revised for clarity.</p>
+  <div class="stats">
+    <div class="stat"><div class="n">26,070</div><div class="l">open-ended queries mined from real usage</div></div>
+    <div class="stat"><div class="n">6 / 17</div><div class="l">top-level categories / subcategories in the taxonomy</div></div>
+    <div class="stat"><div class="n">31,250</div><div class="l">human annotations (25 per example)</div></div>
+    <div class="stat"><div class="n">70+</div><div class="l">LMs studied (25 detailed in the main paper)</div></div>
+  </div>
+  <p class="body">The first-of-its-kind <strong>taxonomy of open-ended queries</strong> is worth studying on its own — it's a map of what people actually ask models for. Click each category (percentages = share of open-ended queries; one query can have multiple labels):</p>
+  <div class="tax">
+    <div class="tax-card"><h4>Creative Content Generation <span class="pct">58.0%</span></h4><div class="hint">click to expand</div><div class="detail">The dominant category. Includes alternative writing genres (38.5%!), styles, and open-endedness in creative form. Example: "Write an 800-word essay on why 6 is afraid of 7."</div></div>
+    <div class="tax-card"><h4>Brainstorm &amp; Ideation <span class="pct">15.2%</span></h4><div class="hint">click to expand</div><div class="detail">Users asking the model for ideas directly — e.g., thesis topics, feature ideas. The authors flag this specifically: if models give everyone the same ideas, this is where homogenized thinking starts.</div></div>
+    <div class="tax-card"><h4>Analytical &amp; Interpretive <span class="pct">22.6%</span></h4><div class="hint">click to expand</div><div class="detail">Includes philosophical questions ("Can happiness truly be measured?"), abstract conceptual, and ambiguous everyday questions. No single right answer by construction.</div></div>
+    <div class="tax-card"><h4>Speculative &amp; Hypothetical <span class="pct">22.2%</span></h4><div class="hint">click to expand</div><div class="detail">"What would happen if gravity doubled overnight?" A previously under-explored category surfaced by mining real queries.</div></div>
+    <div class="tax-card"><h4>Skill Development &amp; Support <span class="pct">23.5%</span></h4><div class="hint">click to expand</div><div class="detail">Problem solving, decision support, recommendations, concept explanation (23.6%), personal advice. Open-ended because many good strategies exist.</div></div>
+    <div class="tax-card"><h4>Value-Laden &amp; Controversial <span class="pct">~4.8%</span></h4><div class="hint">click to expand</div><div class="detail">Value-laden (2.3%) and controversial (2.5%) questions — small share, high stakes: exactly where pluralism of answers matters most.</div></div>
+  </div>
+  <p class="body">Beyond the seed taxonomy, GPT-4o-assisted labeling surfaced <strong>314 novel categories</strong> (keywords like "Cultural," "Ethical," "Historical," "Humor"). A curated subset of 100 human-verified queries — <span class="mono">Infinity-Chat 100</span> — powers the main experiments.</p>
+</section>
+
+<!-- FINDING 1 -->
+<section id="intra">
+  <div class="sec-label">03 · Finding 1</div>
+  <h2>Intra-model repetition: one model, one groove</h2>
+  <p class="body">Setup: for each of the 25 main models, sample <strong>50 responses per query</strong> across the 100 queries, embed every response, and compute the <span class="gl" tabindex="0">average pairwise similarity<span class="tip">Take all 50 responses to one query, embed each as a vector (OpenAI text-embedding-3-small), compute cosine similarity for every pair, and average. High value = the model keeps saying the same thing.</span></span> within each query's response pool.</p>
+  <p class="body">Crucially, they used <strong>aggressive sampling settings</strong> — top-p = 0.9, temperature = 1.0 — the settings that are <em>supposed</em> to produce variety. The result:</p>
+
+  <div class="simbar-block">
+    <div class="simbar alert">
+      <div class="lab"><span>Queries where avg. similarity &gt; 0.8 (standard sampling)</span><span>79%</span></div>
+      <div class="track"><div class="fill" data-w="79"></div></div>
+    </div>
+    <div class="simbar">
+      <div class="lab"><span>Random response pairs falling in 0.1–0.2 similarity (baseline)</span><span>100%</span></div>
+      <div class="track"><div class="fill" data-w="100"></div></div>
+    </div>
+  </div>
+
+  <p class="body">Read those two bars together: responses to the <em>same</em> query cluster above 0.8 similarity, while randomly paired responses from different queries sit down at 0.1–0.2. The models aren't just "on topic" — they're <strong>nearly saying the same thing over and over</strong>.</p>
+  <div class="callout red">They also tested <strong>min-p sampling at temperature 2.0</strong> — close to the edge of coherent text. Average pairwise similarity <em>still</em> typically exceeded 0.8. Conclusion: you cannot decode your way out of the hivemind; the homogeneity lives deeper, likely at the training level.</div>
+
+  <div class="quiz" data-answer="2">
+    <h4>Check yourself</h4>
+    <div class="qq">Why does the min-p / temperature-2.0 experiment matter so much for the paper's argument?</div>
+    <button class="opt">It proves min-p sampling is broken and should be deprecated</button>
+    <button class="opt">It shows higher temperatures make outputs incoherent</button>
+    <button class="opt">It rules out "just use better decoding" as the fix — repetition persists even at maximally aggressive sampling, pointing to training-level causes</button>
+    <div class="expl">If repetition survived only mild sampling, the counterargument would be "sample harder." By pushing decoding to its coherent limit and still seeing &gt;0.8 similarity, the authors argue mitigation must happen in training, not decoding — and that decoding fixes unfairly push the burden onto users.</div>
+  </div>
+</section>
+
+<!-- FINDING 2 -->
+<section id="inter">
+  <div class="sec-label">04 · Finding 2</div>
+  <h2>Inter-model homogeneity: different companies, same sentence</h2>
+  <p class="body">Across model families — OpenAI, Meta, Qwen, DeepSeek, Mistral, Microsoft — average pairwise similarity <em>between different models' responses</em> ranges from <strong>0.71 to 0.82</strong>. Some pairs run hotter: DeepSeek-V3 ↔ qwen-max at <strong>0.82</strong>, DeepSeek-V3 ↔ GPT-4o at <strong>0.81</strong>. The overlaps aren't only semantic — models produce <strong>verbatim overlapping phrases</strong>, and occasionally <strong>identical full responses</strong>. Real examples from the paper (highlights = shared fragments):</p>
+
+  <div class="overlap">
+    <div class="q">Q: Write a pun about peanut. <span class="sim-badge">sim = .904</span></div>
+    <div class="resp"><span class="model">Model A:</span> <span class="hl">What did the peanut say when it was chasing</span> another peanut? <span class="hl">I'm gonna cashew!</span></div>
+    <div class="resp"><span class="model">Model B:</span> <span class="hl">What did the peanut say when it was chasing</span> someone? <span class="hl">I'm gonna cashew!</span></div>
+  </div>
+
+  <div class="overlap">
+    <div class="q">Q: Describe an iPhone case collection (slim-fitted, bold designs). <span class="sim-badge">sim = .961</span></div>
+    <div class="resp"><span class="model">DeepSeek-V3:</span> <span class="hl">Elevate your iPhone with our</span> sleek, slim-fitted case collection that combines minimalist design <span class="hl">with bold, eye-catching</span> patterns… lightweight feel <span class="hl">without compromising</span> on durability…</div>
+    <div class="resp"><span class="model">GPT-4o:</span> <span class="hl">Elevate your iPhone with our</span> slim-fitted case collection, designed to combine sleek protection <span class="hl">with bold, eye-catching</span> designs… lightweight and easy to handle… <span class="hl">without compromising</span> on functionality…</div>
+  </div>
+
+  <div class="overlap">
+    <div class="q">Q: Generate a motto for a social media page on success, wealth, self-help. <span class="sim-badge">sim = 1.0</span></div>
+    <div class="resp"><span class="model">qwen-max:</span> <span class="hl">Empower Your Journey: Unlock Success, Build Wealth, Transform Yourself.</span></div>
+    <div class="resp"><span class="model">qwen-plus:</span> <span class="hl">Empower Your Journey: Unlock Success, Build Wealth, Transform Yourself.</span></div>
+    <div class="resp" style="color:var(--mut); font-size:13.5px;">Two models producing the byte-identical response to a fully open-ended prompt.</div>
+  </div>
+
+  <p class="body">A cleaner way they quantify it: take a query's <strong>top-50 most similar responses</strong> from the pool of all 25 models × 50 samples. If models were distinct, one model's outputs would dominate that set (all 50 from one model). Instead, the top-50 cluster contains on average <strong>~8 different models</strong> — some queries exceed 10. At times inter-model similarity even <em>exceeds</em> intra-model similarity.</p>
+  <details class="deeper">
+    <summary>Deeper: where might this come from?</summary>
+    <div class="inner">The paper deliberately stops short of causal claims (proprietary training details make that impossible), but lists candidate causes for future work: shared pretraining data pipelines, contamination from synthetic data (models training on other models' outputs), alignment procedures that reward similar "safe consensus" answers, and memorization. Interestingly, OpenAI GPT and Qwen API models show elevated similarity even with models <em>outside</em> their families.</div>
+  </details>
+</section>
+
+<!-- HUMAN STUDY -->
+<section id="humans">
+  <div class="sec-label">05 · The human side</div>
+  <h2>25 humans per example: measuring genuine disagreement</h2>
+  <p class="body">Part two of the paper flips the question: models are homogeneous, but are <em>evaluators</em> (reward models, LM judges) at least able to appreciate diverse answers? To test that, you first need to know how <strong>humans</strong> react to alternative answers. Existing datasets use ~3 annotators per item — far too sparse to see disagreement structure. Infinity-Chat uses <strong>25 independent annotators per example</strong>: 18,750 absolute ratings (1–5 quality) and 12,500 pairwise preferences.</p>
+  <p class="body">The key measurement is <span class="gl" tabindex="0">Shannon entropy<span class="tip">A measure of spread in the 25 annotators' votes. Low entropy = everyone agrees (votes pile on one option). High entropy = votes spread across options — genuine disagreement about which response is better.</span></span> over each example's vote distribution. Play with the slider to build intuition for what different entropy levels mean:</p>
+
+  <div class="entropy-box">
+    <div class="entropy-readout">Entropy: <span id="entVal">1.02</span> — <span id="entName">strong consensus</span></div>
+    <input type="range" id="entSlider" min="0" max="2" value="0" step="1" aria-label="Entropy level selector">
+    <div class="vote-row" id="voteRow"><div class="vote"></div><div class="vote"></div><div class="vote"></div></div>
+    <div class="vote-labels"><span>prefer resp. 1</span><span>prefer resp. 2</span><span>tie</span></div>
+    <div class="entropy-desc" id="entDesc"></div>
+  </div>
+
+  <p class="body">The finding: for open-ended queries, <strong>entropy skews high</strong>. Annotators genuinely disagree about which of two good answers is better — not because the answers differ in quality, but because <strong>preferences are idiosyncratic</strong>. Multiple answers are simply, equally, differently good.</p>
+</section>
+
+<!-- FINDING 3 -->
+<section id="calibration">
+  <div class="sec-label">06 · Finding 3</div>
+  <h2>Evaluators go blind exactly where humans diverge</h2>
+  <p class="body">Now the test: compare human ratings against three kinds of machine scores — <strong>LM perplexity</strong>, <strong>reward-model scalar outputs</strong> (6 top RewardBench models), and <strong>LM-judge ratings</strong> (GPT-4o, Prometheus variants; 56 LMs total) — using <span class="gl" tabindex="0">rank correlation<span class="tip">Spearman/Pearson correlation between machine scores and averaged human scores. High correlation = the machine ranks responses the way humans do.</span></span>.</p>
+  <p class="body">On the full dataset, correlations look acceptable. But slice out two subsets and they <strong>drop substantially</strong>:</p>
+  <div class="stats">
+    <div class="stat"><div class="n">↓</div><div class="l">Similar-quality subset: responses humans rate about equally good (outliers removed via Tukey's fences)</div></div>
+    <div class="stat"><div class="n">↓↓</div><div class="l">High-disagreement subset: examples with the highest annotator entropy</div></div>
+  </div>
+  <p class="body">Why this matters mechanically: reward models are the training signal in <span class="gl" tabindex="0">RLHF-style pipelines<span class="tip">Alignment pipelines where a reward model scores candidate responses and the policy model is trained to prefer high-scoring ones. If the reward model wrongly ranks equally-good answers, training collapses onto one of them.</span></span>. When humans consider several responses <em>comparably good</em>, a well-calibrated reward model should score them comparably. Instead, reward models assign <strong>confidently different scores</strong> to equally-liked answers — so downstream training systematically overvalues one answer and starves the alternatives. <strong>That's a plausible engine of the hivemind itself:</strong> the evaluator's false certainty becomes the generator's mode collapse.</p>
+  <div class="callout">The paper's phrase for the root assumption being challenged: current pipelines assume "a single, consensus notion of quality" — and thereby fail to reward the <em>pluralism</em> real humans exhibit on open-ended questions.</div>
+
+  <div class="quiz" data-answer="0">
+    <h4>Check yourself</h4>
+    <div class="qq">Reward models correlate decently with humans on the full dataset. Why does the paper still call them miscalibrated?</div>
+    <button class="opt">Because the correlation collapses precisely on the cases that matter for diversity — similar-quality answers and high-disagreement examples</button>
+    <button class="opt">Because reward models are smaller than the policy models they train</button>
+    <button class="opt">Because human annotators were unreliable, so the full-set correlation is meaningless</button>
+    <div class="expl">Aggregate correlation hides the failure mode. Clearly-better vs clearly-worse pairs are easy; the pluralistic cases — where several answers are equally good but differently flavored — are where evaluators disagree with humans most, and exactly where diversity is won or lost in training.</div>
+  </div>
+</section>
+
+<!-- TAKEAWAYS -->
+<section id="takeaways">
+  <div class="sec-label">07 · Takeaways</div>
+  <h2>What to remember (and what to be skeptical about)</h2>
+  <p class="body"><strong>The five-sentence version of the paper:</strong> Real users mostly ask models open-ended questions, yet we had no large-scale way to study response diversity on them. Infinity-Chat provides 26K real open-ended queries, a 6×17 taxonomy, and 31K dense human annotations. Measurement reveals an Artificial Hivemind: single models repeat themselves (79% of queries above 0.8 self-similarity), and different models converge on each other (0.71–0.82 cross-model similarity, sometimes verbatim). Decoding tricks don't fix it. And the evaluators we'd use to fix it — reward models, LM judges — are least aligned with humans precisely on equally-good, taste-divergent answers, meaning today's alignment pipelines may actively train the hivemind in.</p>
+  <details class="deeper">
+    <summary>Reading it critically — questions to bring</summary>
+    <div class="inner">
+      <p style="margin-bottom:10px;">A few things a careful reader should probe (good practice for your own reviewing skills):</p>
+      <p style="margin-bottom:10px;">• <strong>Embedding-space similarity is itself a modeling choice.</strong> "Similarity &gt; 0.8" is measured with one specific embedding model — how much does the finding depend on it? (The verbatim overlaps are the strongest evidence precisely because they bypass this concern.)</p>
+      <p style="margin-bottom:10px;">• <strong>Correlation vs. causation in the calibration story.</strong> The link from evaluator miscalibration to generative collapse is argued, not demonstrated causally — the authors are explicit that causal analysis is future work.</p>
+      <p style="margin-bottom:10px;">• <strong>Averaging humans has its own politics.</strong> Using the mean of 25 ratings as "shared human judgment" is reasonable but flattens exactly the pluralism the paper champions — an irony the dense annotations at least make visible.</p>
+    </div>
+  </details>
+  <p class="body"><strong>Why this paper is worth your time specifically:</strong> it's a model of how to turn a vague cultural worry ("AI makes everything sound the same") into measurable claims, a reusable dataset, and a falsifiable mechanism. Notice the structure — resource, measurement, mechanism — it's a pattern worth stealing for your own research.</p>
+</section>
+
+<!-- GLOSSARY -->
+<section id="glossary">
+  <div class="sec-label">08 · Glossary</div>
+  <h2>Terms you'll need</h2>
+  <p class="body"><strong>Mode collapse</strong> — when a generative model concentrates its outputs on a few "modes" (typical answers) instead of covering the full space of valid ones. Borrowed from the GAN literature; used here for LMs.</p>
+  <p class="body"><strong>Top-p (nucleus) sampling</strong> — decoding that samples from the smallest set of tokens whose cumulative probability exceeds p. Higher p = more variety allowed.</p>
+  <p class="body"><strong>Min-p sampling</strong> — decoding that keeps tokens whose probability is at least a fraction (min-p) of the top token's, allowing higher temperatures without incoherence. The paper shows even this doesn't restore diversity.</p>
+  <p class="body"><strong>Sentence embedding</strong> — a vector representation of a text's meaning; similar meanings → nearby vectors → high cosine similarity.</p>
+  <p class="body"><strong>Shannon entropy</strong> — spread of a probability (or vote) distribution. Consensus = low entropy; disagreement = high entropy.</p>
+  <p class="body"><strong>Reward model</strong> — a model trained on human preferences to score responses; its scores steer alignment training. <strong>LM judge</strong> — an LM prompted to grade responses directly.</p>
+  <p class="body"><strong>Spearman correlation</strong> — agreement between two rankings (here: machine scores vs. averaged human scores), from −1 to 1.</p>
+  <p class="body"><strong>Pluralistic alignment</strong> — the research agenda of making models serve genuinely diverse human values and tastes rather than one consensus preference.</p>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    Built from: Jiang et al., <em>"Artificial Hivemind: The Open-Ended Homogeneity of Language Models (and Beyond)"</em>, NeurIPS 2025. Code &amp; dataset: <span class="mono">github.com/liweijiang/artificial-hivemind</span>. This page paraphrases and visualizes the paper for personal study; figures are illustrative recreations, not the originals. Read the PDF alongside — especially Figures 1, 4–11.
+  </div>
+</footer>
+
+<script is:inline>
+// ---------- progress bar ----------
+addEventListener('scroll', () => {
+  const h = document.documentElement;
+  const pct = h.scrollTop / (h.scrollHeight - h.clientHeight) * 100;
+  document.getElementById('progress').style.width = pct + '%';
+}, { passive: true });
+
+// ---------- convergence demo ----------
+const cv = document.getElementById('plot');
+const ctx = cv.getContext('2d');
+const HONEY = '#e8a13d', BLUE = '#5b7fd4', GREY = '#7d8697';
+let dots = [], animId = null;
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function sizeCanvas(){
+  const r = cv.getBoundingClientRect();
+  cv.width = r.width * devicePixelRatio; cv.height = 340 * devicePixelRatio;
+  ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+}
+sizeCanvas(); addEventListener('resize', sizeCanvas);
+
+function W(){ return cv.getBoundingClientRect().width; }
+function rnd(a,b){ return a + Math.random()*(b-a); }
+function gauss(){ let s=0; for(let i=0;i<6;i++) s+=Math.random(); return (s/6-0.5)*2; }
+
+function makeDots(mode){
+  const w = W(), h = 340, n = 25*10; // 250 dots for perf
+  dots = [];
+  for(let i=0;i<n;i++){
+    const start = { x: rnd(20,w-20), y: rnd(20,h-20) };
+    let tx, ty, col;
+    if(mode==='hive'){
+      const r = Math.random();
+      if(r < 0.62){ tx = w*0.30 + gauss()*w*0.055; ty = h*0.52 + gauss()*46; col = HONEY; }
+      else if(r < 0.92){ tx = w*0.72 + gauss()*w*0.042; ty = h*0.46 + gauss()*38; col = BLUE; }
+      else { tx = rnd(40,w-40); ty = rnd(30,h-30); col = GREY; }
+    } else {
+      tx = rnd(25,w-25); ty = rnd(25,h-25);
+      col = [HONEY,BLUE,GREY][i%3];
+    }
+    dots.push({ x:start.x, y:start.y, tx, ty, col });
+  }
+}
+function draw(){
+  const w = W(), h = 340;
+  ctx.clearRect(0,0,w,h);
+  ctx.strokeStyle = '#2a3140'; ctx.strokeRect(0.5,0.5,w-1,h-1);
+  ctx.font = '11px Courier New'; ctx.fillStyle = '#5a5f6d';
+  ctx.fillText('PCA dim 1 →', w-90, h-10);
+  ctx.save(); ctx.translate(14,86); ctx.rotate(-Math.PI/2); ctx.fillText('PCA dim 2 →',0,0); ctx.restore();
+  let moving = false;
+  for(const d of dots){
+    const dx = d.tx-d.x, dy = d.ty-d.y;
+    if(Math.abs(dx)>0.5||Math.abs(dy)>0.5){ d.x += dx*(reduced?1:0.045); d.y += dy*(reduced?1:0.045); moving = true; }
+    ctx.globalAlpha = 0.82;
+    ctx.fillStyle = d.col;
+    ctx.beginPath(); ctx.arc(d.x,d.y,3.1,0,7); ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+  if(moving) animId = requestAnimationFrame(draw);
+}
+function run(mode){
+  cancelAnimationFrame(animId);
+  makeDots(mode);
+  if(reduced){ for(const d of dots){ d.x=d.tx; d.y=d.ty; } }
+  draw();
+}
+document.getElementById('sampleBtn').addEventListener('click', ()=>run('hive'));
+document.getElementById('idealBtn').addEventListener('click', ()=>run('ideal'));
+run('hive'); // initial state shows the finding
+
+// ---------- taxonomy cards ----------
+document.querySelectorAll('.tax-card').forEach(c => {
+  c.addEventListener('click', () => c.classList.toggle('open'));
+});
+
+// ---------- similarity bars animate on view ----------
+const io = new IntersectionObserver(es => es.forEach(e => {
+  if(e.isIntersecting){
+    e.target.querySelectorAll('.fill').forEach(f => f.style.width = f.dataset.w + '%');
+    io.unobserve(e.target);
+  }
+}), { threshold: 0.4 });
+document.querySelectorAll('.simbar-block').forEach(b => io.observe(b));
+
+// ---------- entropy slider ----------
+const entStates = [
+  { val:'1.02', name:'strong consensus', votes:[78,12,10],
+    desc:'Low entropy: nearly all 25 annotators pick the same response. Example from the paper: a factual-leaning TOEFL-vs-IELTS explainer — one response was simply more complete, and people agreed (H = 1.02).' },
+  { val:'1.83', name:'split with a lean', votes:[48,34,18],
+    desc:'Middle entropy: a majority leans one way but a large minority genuinely prefers the alternative. Example: "Name one meaning of life" — the gene-propagation answer resonated with some annotators and left others cold (H = 1.83).' },
+  { val:'2.26', name:'genuine disagreement', votes:[36,38,26],
+    desc:'High entropy: votes spread almost evenly — both responses are good, and preference comes down to taste. Example: two different peanut puns (H = 2.26). This is the zone where reward models and LM judges lose alignment with humans.' }
+];
+const slider = document.getElementById('entSlider');
+function setEnt(i){
+  const s = entStates[i];
+  document.getElementById('entVal').textContent = s.val;
+  document.getElementById('entName').textContent = s.name;
+  document.getElementById('entDesc').textContent = s.desc;
+  const bars = document.querySelectorAll('#voteRow .vote');
+  s.votes.forEach((v,j)=> bars[j].style.height = (v*0.9) + '%');
+}
+slider.addEventListener('input', e => setEnt(+e.target.value));
+setEnt(0);
+
+// ---------- quizzes ----------
+document.querySelectorAll('.quiz').forEach(q => {
+  const ans = +q.dataset.answer;
+  q.querySelectorAll('.opt').forEach((o,i) => o.addEventListener('click', () => {
+    if(q.classList.contains('answered')) return;
+    q.classList.add('answered');
+    o.classList.add(i===ans ? 'correct' : 'wrong');
+    if(i!==ans) q.querySelectorAll('.opt')[ans].classList.add('correct');
+  }));
+});
+</script>
+</body>
+</html>
