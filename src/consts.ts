@@ -3,6 +3,7 @@ export const SITE_DESCRIPTION = 'Notes on AI, research, and side projects.';
 
 export const NAV_LINKS = [
   { href: '/', label: 'Home' },
+  { href: '/blog/', label: 'Blog' },
   { href: '/tags/', label: 'Tags' },
   { href: '/about/', label: 'About' },
 ];

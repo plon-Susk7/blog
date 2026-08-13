@@ -1,25 +1,170 @@
 ---
-import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import PostCard from '../components/PostCard.astro';
-import { SITE_DESCRIPTION } from '../consts';
-
-const posts = (await getCollection('blog', ({ data }) => import.meta.env.DEV || !data.draft)).sort(
-  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
-);
 ---
 
-<BaseLayout>
-  <p class="tagline">{SITE_DESCRIPTION}</p>
-  <ul class="post-list">
-    {posts.map((post) => (
-      <PostCard
-        slug={post.id}
-        title={post.data.title}
-        description={post.data.description}
-        date={post.data.date}
-        tags={post.data.tags}
-      />
-    ))}
-  </ul>
+<BaseLayout title="Resume" description="Resume of Priyash Shah — AI Analyst Developer at FNZ, undergraduate researcher at IIIT-Delhi.">
+  <div class="resume">
+    <header class="resume-header">
+      <h1 class="resume-name">Priyash Shah</h1>
+      <p class="resume-contact">
+        <a href="mailto:priyash21553@iiitd.ac.in">priyash21553@iiitd.ac.in</a>
+        <span class="dot">&middot;</span>
+        <a href="https://github.com/plon-Susk7" target="_blank" rel="noopener noreferrer">github.com/plon-Susk7</a>
+        <span class="dot">&middot;</span>
+        <a href="https://www.linkedin.com/in/priyash-shah-932371202/" target="_blank" rel="noopener noreferrer">linkedin.com/in/priyash-shah</a>
+        <span class="dot">&middot;</span>
+        <span>Gurugram, India</span>
+      </p>
+    </header>
+
+    <div class="prose resume-prose">
+      <h2>Research Interests</h2>
+      <p>
+        Understanding how properties of training and evaluation data shape model behaviour, and turning that
+        understanding into reliable measurement. My current work isolates how much of a model's apparent
+        group-level bias is a real property of the construct being measured versus an artifact of the annotation
+        pipeline that produced the data. I want to extend this data-centric, measurement-first approach to LLMs
+        &mdash; specifically to factuality and reliable information synthesis, where the same question
+        (&ldquo;is this behaviour in the model, or in the data that made it?&rdquo;) is largely unresolved.
+      </p>
+
+      <h2>Education</h2>
+      <div class="resume-entry">
+        <div class="resume-entry-head">
+          <h3>Indraprastha Institute of Information Technology, Delhi (IIIT-Delhi)</h3>
+          <span class="resume-dates">Dec 2021 &ndash; Jul 2025</span>
+        </div>
+        <p class="resume-subhead">B.Tech, Computer Science and Artificial Intelligence &middot; CGPA 8.5/10</p>
+        <p class="resume-note">
+          Full merit scholarship (ICCR, Government of India) &mdash; awarded to international students for
+          academic excellence.
+        </p>
+        <p>
+          Relevant coursework: Information Retrieval (A&minus;), Large Language Models (A&minus;), Statistical
+          Inference, Artificial Intelligence, Machine Learning; Data Structures &amp; Algorithms, Databases,
+          Operating Systems, Computer Networks.
+        </p>
+      </div>
+
+      <h2>Research Experience</h2>
+      <div class="resume-entry">
+        <div class="resume-entry-head">
+          <h3>Undergraduate Researcher &mdash; Human-Machine Interaction (HMI) Lab, IIIT-Delhi</h3>
+          <span class="resume-dates">2025 &ndash; Present</span>
+        </div>
+        <p class="resume-note">
+          Advisor: Prof. Jainendra Shukla &middot; First-author manuscript in preparation (target: PNAS Nexus)
+        </p>
+        <p>
+          <strong>Disentangling model bias from measurement bias in automated facial coding.</strong>
+          Preregistered study testing whether emotion &rarr; facial Action Unit (AU) mappings are invariant across
+          demographic groups, using the RADIATE and NimStim corpora.
+        </p>
+        <ul>
+          <li>
+            <strong>Data-centric attribution.</strong> Decomposed apparent demographic bias in automated AU
+            detectors and showed it is dominated by an <em>additive per-subject offset</em> rather than by
+            group-dependent structure &mdash; i.e. the bias lives in a stable, correctable property of how each
+            subject is encoded, not in the emotion&ndash;AU mapping itself. This reframes a &ldquo;model is
+            biased&rdquo; claim as a measurable, attributable data artifact.
+          </li>
+          <li>
+            <strong>Multi-detector replication as a reliability gate.</strong> Independently replicated the full
+            analysis across three detectors (OpenFace 2.2, Py-Feat, LibreFace 2.0). Found that AU invariance
+            across demographic groups holds consistently <em>despite weak raw inter-detector agreement</em>
+            &mdash; establishing that the substantive conclusion is a property of the signal, not of any one
+            measurement tool.
+          </li>
+          <li>
+            <strong>Statistical pipeline.</strong> Built the end-to-end analysis in Python: generalised linear
+            mixed models (statsmodels GLMMs), subject-median centering, subject-stratified cross-validation,
+            nonparametric permutation testing, and a preregistered three-criterion decision rule (fold-majority
+            outperformance, permutation-null threshold, practical-significance floor).
+          </li>
+          <li>
+            <strong>Confound identification.</strong> Diagnosed and corrected a design flaw in the original
+            leave-one-dataset-out protocol in which dataset identity and ethnicity were perfectly collinear,
+            making the original effect uninterpretable. Redesigned the validation scheme, which materially
+            changed the study's conclusion.
+          </li>
+        </ul>
+      </div>
+
+      <h2>Industry Experience</h2>
+      <div class="resume-entry">
+        <div class="resume-entry-head">
+          <h3>FNZ Technology (India) Pvt. Ltd.</h3>
+          <span class="resume-dates">Jan 2025 &ndash; Present</span>
+        </div>
+        <p class="resume-note">AI Analyst Developer &middot; Gurugram, India</p>
+        <ul>
+          <li>
+            Built and shipped a retrieval-grounded LLM agent (Python, LangChain) that answers questions about
+            complex, undocumented business logic for consultants, testers, and developers &mdash; cutting
+            cross-team clarification time by ~40% across 3+ business units. Core engineering challenge was
+            grounding: constraining answers to retrieved source-of-truth artifacts so the agent fails visibly
+            rather than fabricating plausible business rules.
+          </li>
+          <li>
+            Deliver client-facing features and defect fixes on a financial advisory platform managing &pound;54B
+            AUM (C#, React, SQL).
+          </li>
+          <li><strong>FNZ AI Hackathon winner</strong> &mdash; LLM-powered requirement-gathering tool, selected among 50+ participants.</li>
+        </ul>
+      </div>
+
+      <div class="resume-entry">
+        <div class="resume-entry-head">
+          <h3>Bank of New York &mdash; Pershing (BNY)</h3>
+          <span class="resume-dates">May 2024 &ndash; Jul 2024</span>
+        </div>
+        <p class="resume-note">Software Developer, Intern &middot; Onsite</p>
+        <ul>
+          <li>
+            Built a full-stack diagnostics dashboard (Angular, Spring Boot, SQL); applied LLM prompt engineering
+            to auto-categorise login-failure logs, replacing manual triage of unstructured log text.
+          </li>
+        </ul>
+      </div>
+
+      <h2>Projects</h2>
+      <div class="resume-entry">
+        <p>
+          <strong><a href="https://github.com/plon-Susk7/face-harvester" target="_blank" rel="noopener noreferrer">face-harvester</a></strong>
+          <br />
+          Reproducible data pipeline underpinning the AU study: automated corpus ingestion, per-subject identity
+          handling, and harmonised feature extraction across three independent AU detectors into a single aligned
+          schema, so that detector-attributable variance can be separated from subject- and stimulus-attributable
+          variance.
+        </p>
+        <p>
+          <strong>Resume-Optimizer</strong> &middot; <strong>patchwork</strong>
+          <span class="dot">&middot;</span>
+          <a href="https://github.com/plon-Susk7" target="_blank" rel="noopener noreferrer">github.com/plon-Susk7</a>
+          <br />
+          LLM application and open-source tooling projects. <em>Hacktoberfest 2023 Hall of Fame</em> (open-source
+          contributions); <em>Kaggle Notebooks Expert</em>.
+        </p>
+      </div>
+
+      <h2>Technical Skills</h2>
+      <dl class="skills-list">
+        <div class="skills-row">
+          <dt>Languages</dt>
+          <dd>Python, C++, C#, SQL, JavaScript, Java</dd>
+        </div>
+        <div class="skills-row">
+          <dt>ML &amp; Research</dt>
+          <dd>
+            PyTorch, scikit-learn, LangChain, LLM evaluation, mixed-effects models (GLMMs), permutation testing,
+            preregistration, subject-stratified cross-validation, statsmodels
+          </dd>
+        </div>
+        <div class="skills-row">
+          <dt>Tools</dt>
+          <dd>Git, Docker, Linux, FastAPI, React, Postman</dd>
+        </div>
+      </dl>
+    </div>
+  </div>
 </BaseLayout>
